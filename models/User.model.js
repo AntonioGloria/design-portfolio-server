@@ -14,10 +14,18 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Password is required."],
     },
-    name: {
+    username: {
       type: String,
-      required: [true, "Name is required."],
+      required: [true, "Username is required."],
     },
+    avatar: {
+      type: String,
+      default: "https://res.cloudinary.com/dwhznw5ny/image/upload/v1670880806/design-portfolio/ui-defaults/defaultAvatar_i3bmyp.png"
+    },
+    ownArtworks: [{type: Schema.Types.ObjectId, ref: 'Artwork'}],
+    ownAlbums: [{type: Schema.Types.ObjectId, ref: 'Album'}],
+    likedArtworks: [{type: Schema.Types.ObjectId, ref: 'Artwork'}],
+    likedCollections: [{type: Schema.Types.ObjectId, ref: 'Album'}],
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`
