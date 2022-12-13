@@ -22,6 +22,10 @@ const userSchema = new Schema(
       type: String,
       default: "https://res.cloudinary.com/dwhznw5ny/image/upload/v1670880806/design-portfolio/ui-defaults/defaultAvatar_i3bmyp.png"
     },
+    coverImg: {
+      type: String,
+      default: "https://res.cloudinary.com/dwhznw5ny/image/upload/v1670953075/design-portfolio/ui-defaults/defaultCover_vkfp2o.png"
+    },
     ownArtworks: [{type: Schema.Types.ObjectId, ref: 'Artwork'}],
     ownAlbums: [{type: Schema.Types.ObjectId, ref: 'Album'}],
     likedArtworks: [{type: Schema.Types.ObjectId, ref: 'Artwork'}],
