@@ -19,7 +19,7 @@ router.get("/", async (req, res, next) => {
 router.get("/:username", async (req, res, next) => {
   try {
     const username = req.params;
-    const userData = await User.findOne(username);
+    const userData = await User.findOne(username).populate("ownAlbums").populate("favCollections");
     res.json(userData);
   }
   catch (err) {
@@ -31,7 +31,7 @@ router.get("/:username", async (req, res, next) => {
 router.get("/:username/edit-profile", async (req, res, next) => {
   try {
     const username = req.params;
-    const userData = await User.findOne(username);
+    const userData = await User.findOne(username)
     res.json(userData);
   }
   catch (err) {

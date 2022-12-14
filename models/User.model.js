@@ -1,6 +1,5 @@
 const { Schema, model } = require("mongoose");
 
-// TODO: Please make sure you edit the User model to whatever makes sense in this case
 const userSchema = new Schema(
   {
     email: {
@@ -26,10 +25,13 @@ const userSchema = new Schema(
       type: String,
       default: "https://res.cloudinary.com/dwhznw5ny/image/upload/v1670953075/design-portfolio/ui-defaults/defaultCover_vkfp2o.png"
     },
+    bio: {
+      type: String
+    },
     ownArtworks: [{type: Schema.Types.ObjectId, ref: 'Artwork'}],
     ownAlbums: [{type: Schema.Types.ObjectId, ref: 'Album'}],
-    likedArtworks: [{type: Schema.Types.ObjectId, ref: 'Artwork'}],
-    likedCollections: [{type: Schema.Types.ObjectId, ref: 'Album'}],
+    favArtworks: [{type: Schema.Types.ObjectId, ref: 'Artwork'}],
+    favCollections: [{type: Schema.Types.ObjectId, ref: 'Album'}],
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`

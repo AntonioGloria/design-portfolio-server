@@ -10,6 +10,8 @@ const jwt = require("jsonwebtoken");
 // Require the User model in order to interact with the database
 const User = require("../models/User.model");
 
+const Album = require("../models/Album.model");
+
 // Require necessary (isAuthenticated) middleware in order to control access to specific routes
 const { isAuthenticated } = require("../middleware/jwt.middleware.js");
 
@@ -67,6 +69,13 @@ router.post("/signup", (req, res, next) => {
 
       // Create a new object that doesn't expose the password
       const user = { email, username, _id };
+
+      // Add default empty albums to new user
+      Album.create([{ title: "All", owner: _id }, { title: "Favorites", owner: _id }])
+      .then(createdAlbums => {
+        User.findByIdAndUpdate(_id, { $push: { ownAlbums: createdAlbums[0], favCollections: createdAlbums[1] } }, { new: true })
+        .then(result => console.log(result))
+      })
 
       // Send a json response containing the user object
       res.status(201).json({ user: user });
