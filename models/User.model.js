@@ -17,6 +17,10 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Username is required."],
     },
+    tagline: {
+      type: String,
+      default: "Jutsu Creator"
+    },
     avatar: {
       type: String,
       default: "https://res.cloudinary.com/dwhznw5ny/image/upload/v1670880806/design-portfolio/ui-defaults/defaultAvatar_i3bmyp.png"
