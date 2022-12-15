@@ -1,44 +1,34 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User.model");
+const Artwork = require("../models/Artwork.model");
+const Album = require("../models/Album.model");
+//const User = require("../models/User.model");
 const fileUploader = require("../config/cloudinary.config");
 
-
-// Get all users
+// Get all artwork
 router.get("/", async (req, res, next) => {
   try {
-    const allUsers = await User.find();
-    res.json(allUsers);
+    const allArtwork = await Artwork.find();
+    res.json(allArtwork);
   }
   catch (err) {
     console.log(err);
   }
 });
 
-// Get user details
-router.get("/:username", async (req, res, next) => {
+// Get specific artwork
+router.get("/:artwork", async (req, res, next) => {
   try {
-    const username = req.params;
-    const userData = await User.findOne(username).populate("ownAlbums").populate("favCollections");
-    res.json(userData);
+    const { _id } = req.params;
+    const artData = await Artwork.findOne(_id);
+    res.json(artData);
   }
   catch (err) {
     console.log(err);
   }
 });
 
-// Get form to edit user
-router.get("/:username/edit-profile", async (req, res, next) => {
-  try {
-    const username = req.params;
-    const userData = await User.findOne(username)
-    res.json(userData);
-  }
-  catch (err) {
-    console.log(err);
-  }
-});
-
+/*
 // Upload image
 router.post("/upload", fileUploader.single("imageUrl"), (req, res, next) => {
   // console.log("file is: ", req.file)
@@ -65,6 +55,6 @@ router.put("/:username/edit-profile", async (req, res, next) => {
     console.log(err);
   }
 });
-
+*/
 
 module.exports = router;

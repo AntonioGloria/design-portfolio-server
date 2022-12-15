@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User.model");
 const fileUploader = require("../config/cloudinary.config");
-
+const User = require("../models/User.model");
+const Album = require("../models/Album.model");
+const Artwork = require("../models/Artwork.model");
 
 // Get all users
 router.get("/", async (req, res, next) => {
@@ -27,18 +28,6 @@ router.get("/:username", async (req, res, next) => {
   }
 });
 
-// Get form to edit user
-router.get("/:username/edit-profile", async (req, res, next) => {
-  try {
-    const username = req.params;
-    const userData = await User.findOne(username)
-    res.json(userData);
-  }
-  catch (err) {
-    console.log(err);
-  }
-});
-
 // Upload image
 router.post("/upload", fileUploader.single("imageUrl"), (req, res, next) => {
   // console.log("file is: ", req.file)
@@ -51,7 +40,6 @@ router.post("/upload", fileUploader.single("imageUrl"), (req, res, next) => {
   res.json({ fileUrl: req.file.path });
 
 });
-
 
 // Send new information to update user info
 router.put("/:username/edit-profile", async (req, res, next) => {
@@ -66,5 +54,52 @@ router.put("/:username/edit-profile", async (req, res, next) => {
   }
 });
 
+// Get user's albums
+router.get("/:username/albums/", async (req, res, next) => {
+  try {
+    const { username } = req.params;
+    const userInfo = await User.find({ username }, "ownAlbums").populate("ownAlbums");
+    res.json(userInfo);
+  }
+  catch (err) {
+    console.log(err);
+  }
+});
+
+// Get artworks in user's specific album
+router.get("/:username/albums/:album", async (req, res, next) => {
+  try {
+    const { album } = req.params;
+    const userAlbumArt = await Album.findOne({ _id: album }, "artworks").populate("artworks");
+    res.json(userAlbumArt);
+  }
+  catch (err) {
+    console.log(err);
+  }
+});
+
+// Create album
+router.post("/:username/create-album", async (req, res, next) => {
+  try {
+    const { username } = req.params;
+    const createdAlbum = await Album.create(req.body);
+    await User.findOneAndUpdate(username, { $push:{ ownAlbums: createdAlbum } }, { new : true });
+    res.json(createdAlbum);
+  }
+  catch (err) {
+    console.log(err);
+  }
+});
+
+// Create artwork
+router.post("/:username/create-artwork", async (req, res, next) => {
+  try {
+    const createdArt = await Artwork.create(req.body);
+    res.json(createdArt);
+  }
+  catch (err) {
+    console.log(err);
+  }
+});
 
 module.exports = router;
