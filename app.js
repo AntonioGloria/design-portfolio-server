@@ -27,8 +27,8 @@ app.use("/users", userRoutes);
 const albumsRoutes = require("./routes/albums.routes");
 app.use("/albums", albumsRoutes);
 
-const artworkRoutes = require("./routes/artwork.routes");
-app.use("/artwork", artworkRoutes);
+const artworksRoutes = require("./routes/artwork.routes");
+app.use("/artworks", artworksRoutes);
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
