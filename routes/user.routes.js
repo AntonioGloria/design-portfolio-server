@@ -30,7 +30,6 @@ router.get("/:username", async (req, res, next) => {
 
 // Upload image
 router.post("/upload", fileUploader.single("imageUrl"), (req, res, next) => {
-  // console.log("file is: ", req.file)
   if (!req.file) {
     next(new Error("No file uploaded!"));
     return;
@@ -42,15 +41,18 @@ router.post("/upload", fileUploader.single("imageUrl"), (req, res, next) => {
 });
 
 // Upload multiple images
-router.post("/upload-many", fileUploader.array("imageUrl"), (req, res, next) => {
-  // console.log("file is: ", req.file)
-  if (!req.file) {
+router.post("/upload-multi", fileUploader.array("imageUrl"), (req, res, next) => {
+  if (!req.files) {
     next(new Error("No file uploaded!"));
     return;
   }
-  // Get the URL of the uploaded file and send it as a response.
-  // 'fileUrl' can be any name, just make sure you remember to use the same when accessing it on the frontend
-  res.json({ fileUrl: req.file.path });
+
+  const { files } = req;
+  const urls = files.map(file => {
+    return file.path;
+  })
+
+  res.json({ fileUrls: urls });
 
 });
 
@@ -107,7 +109,10 @@ router.post("/:username/create-album", async (req, res, next) => {
 // Create artwork
 router.post("/:username/create-artwork", async (req, res, next) => {
   try {
+    const { albums } = req.body;
     const createdArt = await Artwork.create(req.body);
+
+    await Album.updateMany({ _id: albums }, { $push : { artworks:createdArt } }, { new: true });
     res.json(createdArt);
   }
   catch (err) {

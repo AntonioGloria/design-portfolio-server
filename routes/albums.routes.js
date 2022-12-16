@@ -18,6 +18,7 @@ router.get("/:album", async (req, res, next) => {
   try {
     const { _id } = req.params;
     const albumData = await Album.findOne(_id).populate("artworks");
+    console.log(albumData);
     res.json(albumData);
   }
   catch (err) {
