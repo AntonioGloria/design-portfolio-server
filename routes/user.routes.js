@@ -20,7 +20,22 @@ router.get("/", async (req, res, next) => {
 router.get("/:username", async (req, res, next) => {
   try {
     const username = req.params;
-    const userData = await User.findOne(username).populate("ownAlbums").populate("favCollections");
+    const userData = await User.findOne(username).populate("ownAlbums")
+                                                  .populate({
+                                                    path: 'ownAlbums',
+                                                    populate: {
+                                                      path: 'artworks',
+                                                      model: 'Artwork'
+                                                    }
+                                                  })
+                                                  .populate("favCollections")
+                                                  .populate({
+                                                    path: 'favCollections',
+                                                    populate: {
+                                                      path: 'artworks',
+                                                      model: 'Artwork'
+                                                    }
+                                                  })
     res.json(userData);
   }
   catch (err) {
