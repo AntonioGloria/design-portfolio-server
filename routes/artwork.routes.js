@@ -13,7 +13,6 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-/*
 // Get specific artwork
 router.get("/:artwork", async (req, res, next) => {
   try {
@@ -25,6 +24,5 @@ router.get("/:artwork", async (req, res, next) => {
     console.log(err);
   }
 });
-*/
 
 module.exports = router;
