@@ -2,11 +2,15 @@ const express = require("express");
 const router = express.Router();
 const Artwork = require("../models/Artwork.model");
 
-// Get all artwork
+// Get all artwork, or filter by category and medium
 router.get("/", async (req, res, next) => {
   try {
-    const allArtwork = await Artwork.find();
-    res.json(allArtwork);
+    const { category, medium } = req.query;
+    const artData = await Artwork.find({
+      ...(category && {category: category}),
+      ...(medium && {medium: medium})
+    });
+    res.json(artData);
   }
   catch (err) {
     console.log(err);
