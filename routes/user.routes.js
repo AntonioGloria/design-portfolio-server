@@ -3,7 +3,6 @@ const router = express.Router();
 const fileUploader = require("../config/cloudinary.config");
 const User = require("../models/User.model");
 const Album = require("../models/Album.model");
-const Artwork = require("../models/Artwork.model");
 
 // Get all users
 router.get("/", async (req, res, next) => {
@@ -115,20 +114,6 @@ router.post("/:username/create-album", async (req, res, next) => {
     const createdAlbum = await Album.create(req.body);
     await User.findOneAndUpdate(username, { $push:{ ownAlbums: createdAlbum } }, { new : true });
     res.json(createdAlbum);
-  }
-  catch (err) {
-    console.log(err);
-  }
-});
-
-// Create artwork
-router.post("/:username/create-artwork", async (req, res, next) => {
-  try {
-    const { albums } = req.body;
-    const createdArt = await Artwork.create(req.body);
-
-    await Album.updateMany({ _id: albums }, { $push : { artworks:createdArt } }, { new: true });
-    res.json(createdArt);
   }
   catch (err) {
     console.log(err);
