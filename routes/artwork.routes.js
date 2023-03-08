@@ -29,4 +29,16 @@ router.get("/:_id", async (req, res, next) => {
   }
 });
 
+// Delete artwork
+router.delete("/:_id/delete", async (req, res, next) => {
+  try {
+    const { _id } = req.params;
+    const deletedProject = await Artwork.findByIdAndDelete({ _id });
+    res.json(deletedProject);
+  }
+  catch (err) {
+    console.log(err);
+  }
+});
+
 module.exports = router;
