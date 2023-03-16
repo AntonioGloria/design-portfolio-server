@@ -39,4 +39,17 @@ router.post("/create", async (req, res, next) => {
   }
 });
 
+// Delete album
+router.delete("/:_id/delete", async (req, res, next) => {
+  try {
+    const { _id } = req.params;
+    const deletedAlbum = await Album.findByIdAndDelete({ _id });
+    await User.findByIdAndUpdate({ _id: deletedAlbum.owner }, { $pull : { ownAlbums: _id } }, { new: true });
+    res.json(deletedAlbum);
+  }
+  catch (err) {
+    console.log(err);
+  }
+});
+
 module.exports = router;
