@@ -71,7 +71,7 @@ router.post("/signup", (req, res, next) => {
       const user = { email, username, _id };
 
       // Add default empty albums to new user
-      Album.create([{ title: "All", owner: _id }, { title: "Favorites", owner: _id }])
+      Album.create([{ title: "All", creator: _id }, { title: "Favorites", creator: _id }])
       .then(createdAlbums => {
         User.findByIdAndUpdate(_id, { $push: { ownAlbums: createdAlbums[0], favCollections: createdAlbums[1] } }, { new: true })
         .then(result => console.log(result))

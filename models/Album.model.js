@@ -7,7 +7,7 @@ const albumSchema = new Schema(
       required: [true, "Title is required."],
       trim: true,
     },
-    owner: {
+    creator: {
       type: Schema.Types.ObjectId,
       ref: 'User',
     },

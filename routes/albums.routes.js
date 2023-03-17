@@ -29,9 +29,9 @@ router.get("/:album", async (req, res, next) => {
 // Create own album
 router.post("/create", async (req, res, next) => {
   try {
-    const { owner } = req.body;
+    const { creator } = req.body;
     const newAlbum = await Album.create(req.body);
-    await User.updateOne({ _id: owner._id }, { $push : { ownAlbums: newAlbum } }, { new: true });
+    await User.updateOne({ _id: creator._id }, { $push : { ownAlbums: newAlbum } }, { new: true });
     res.json(newAlbum);
   }
   catch (err) {
@@ -44,7 +44,7 @@ router.delete("/:_id/delete", async (req, res, next) => {
   try {
     const { _id } = req.params;
     const deletedAlbum = await Album.findByIdAndDelete({ _id });
-    await User.findByIdAndUpdate({ _id: deletedAlbum.owner }, { $pull : { ownAlbums: _id } }, { new: true });
+    await User.findByIdAndUpdate({ _id: deletedAlbum.creator }, { $pull : { ownAlbums: _id } }, { new: true });
     res.json(deletedAlbum);
   }
   catch (err) {
