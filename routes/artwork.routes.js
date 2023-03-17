@@ -22,7 +22,7 @@ router.get("/", async (req, res, next) => {
 router.get("/:_id", async (req, res, next) => {
   try {
     const { _id } = req.params;
-    const artData = await Artwork.findOne({ _id }).populate("author").populate("assets");
+    const artData = await Artwork.findOne({ _id }).populate("creator").populate("assets");
     res.json(artData);
   }
   catch (err) {

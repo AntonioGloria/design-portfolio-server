@@ -7,7 +7,7 @@ const artworkSchema = new Schema(
       required: [true, "Title is required."],
       trim: true,
     },
-    author: {
+    creator: {
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
