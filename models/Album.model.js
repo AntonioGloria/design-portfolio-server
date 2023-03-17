@@ -11,6 +11,10 @@ const albumSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
+    thumbnail: {
+      type: String,
+      default: "https://res.cloudinary.com/dwhznw5ny/image/upload/v1671209665/design-portfolio/ui-defaults/defaultAlbum_qgieye.png"
+    },
     artworks: [{type: Schema.Types.ObjectId, ref: 'Artwork'}],
   },
   {
