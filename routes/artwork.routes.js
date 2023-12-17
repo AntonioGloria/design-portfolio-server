@@ -44,6 +44,18 @@ router.post("/create", async (req, res, next) => {
   }
 });
 
+// PATCH Edit artwork
+router.patch("/:artworkId/edit", async (req, res, next) => {
+  try {
+    const { artworkId } = req.params;
+    await Artwork.findByIdAndUpdate(artworkId, req.body);
+    res.json("Artwork edited successfully");
+  }
+  catch (err) {
+    console.log(err);
+  }
+});
+
 // DELETE artwork
 router.delete("/:_id/delete", async (req, res, next) => {
   try {

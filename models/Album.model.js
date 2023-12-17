@@ -13,7 +13,7 @@ const albumSchema = new Schema(
     },
     thumbnail: {
       type: String,
-      default: "https://res.cloudinary.com/dwhznw5ny/image/upload/v1671209665/design-portfolio/ui-defaults/defaultAlbum_qgieye.png"
+      default: "https://res.cloudinary.com/dwhznw5ny/image/upload/v1702842616/design-portfolio/ui-defaults/defaultAlbum_zxv3sr.png"
     },
     artworks: [{type: Schema.Types.ObjectId, ref: 'Artwork'}],
   },

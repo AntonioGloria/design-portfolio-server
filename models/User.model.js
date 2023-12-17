@@ -23,11 +23,11 @@ const userSchema = new Schema(
     },
     avatar: {
       type: String,
-      default: "https://res.cloudinary.com/dwhznw5ny/image/upload/v1671209663/design-portfolio/ui-defaults/defaultAvatar_ipkiol.png"
+      default: "https://res.cloudinary.com/dwhznw5ny/image/upload/v1702842619/design-portfolio/ui-defaults/defaultAvatar_crbk2x.png"
     },
     coverImg: {
       type: String,
-      default: "https://res.cloudinary.com/dwhznw5ny/image/upload/v1671209672/design-portfolio/ui-defaults/defaultCover_yjjc2i.png"
+      default: "https://res.cloudinary.com/dwhznw5ny/image/upload/v1702842623/design-portfolio/ui-defaults/defaultCover_e9xpho.png"
     },
     bio: {
       type: String
