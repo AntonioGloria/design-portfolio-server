@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Artwork = require("../models/Artwork.model");
 const Album = require("../models/Album.model");
+const { isAuthenticated } = require("../middleware/jwt.middleware")
 
 // Get all artwork, or filter by category and medium
 router.get("/", async (req, res, next) => {
@@ -31,28 +32,30 @@ router.get("/:_id", async (req, res, next) => {
 });
 
 // POST Create artwork
-router.post("/create", async (req, res, next) => {
+router.post("/create", isAuthenticated, async (req, res, next) => {
   try {
     const { albums } = req.body;
-    const createdArt = await Artwork.create(req.body);
+    const { _id } = req.payload;
 
+    const createdArt = await Artwork.create({ ...req.body, creator:_id });
     await Album.updateMany({ _id: albums }, { $push : { artworks:createdArt } }, { new: true });
     res.json(createdArt);
   }
   catch (err) {
-    console.log(err);
+    next(err);
   }
 });
 
 // PATCH Edit artwork
-router.patch("/:artworkId/edit", async (req, res, next) => {
+router.patch("/:artworkId/edit", isAuthenticated, async (req, res, next) => {
   try {
     const { artworkId } = req.params;
-    await Artwork.findByIdAndUpdate(artworkId, req.body);
-    res.json("Artwork edited successfully");
+
+    const editedArt = await Artwork.findByIdAndUpdate(artworkId, req.body, { new : true });
+    res.json(editedArt);
   }
   catch (err) {
-    console.log(err);
+    next(err);
   }
 });
 
