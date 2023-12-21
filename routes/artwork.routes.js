@@ -38,7 +38,7 @@ router.post("/create", isAuthenticated, async (req, res, next) => {
     const { _id } = req.payload;
 
     const createdArt = await Artwork.create({ ...req.body, creator:_id });
-    await Album.updateMany({ _id: albums }, { $push : { artworks:createdArt } }, { new: true });
+    await Album.updateMany({ _id: { $in: albums } }, { $push : { artworks:createdArt } }, { new: true });
     res.json(createdArt);
   }
   catch (err) {
@@ -58,16 +58,21 @@ router.patch("/:artworkId/edit", isAuthenticated, async (req, res, next) => {
     const albumsToAdd = albums.filter((album => {
       return !oldArtwork.albums.includes(album);
     }));
-    await Album.updateMany({ _id: { $in: albumsToAdd } }, { $push: { artworks: artworkId } });
+
+    if (albumsToAdd.length > 0) {
+      await Album.updateMany({ _id: { $in: albumsToAdd } }, { $addToSet: { artworks: artworkId } });
+    }
 
     // Find albums in DB document that aren't in req.body and remove artwork from them
     const albumsToRemove = oldArtwork.albums.filter((album => {
-      return !albums.includes(album);
+      return !albums.includes(album.toString());
     }));
-    await Album.updateMany({ _id: { $in: albumsToRemove } }, { $pull: { artworks: artworkId } });
+
+    if (albumsToRemove.length > 0) {
+      await Album.updateMany({ _id: { $in: albumsToRemove } }, { $pull: { artworks: artworkId } });
+    }
 
     const editedArt = await Artwork.findByIdAndUpdate(artworkId, req.body, { new : true });
-
     res.json(editedArt);
   }
 
