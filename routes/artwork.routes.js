@@ -48,12 +48,29 @@ router.post("/create", isAuthenticated, async (req, res, next) => {
 
 // PATCH Edit artwork
 router.patch("/:artworkId/edit", isAuthenticated, async (req, res, next) => {
+  const { artworkId } = req.params;
+  const { albums } = req.body;
+
   try {
-    const { artworkId } = req.params;
+    const oldArtwork = await Artwork.findById(artworkId);
+
+    // Find albums in req.body that aren't in DB document and add artwork to them
+    const albumsToAdd = albums.filter((album => {
+      return !oldArtwork.albums.includes(album);
+    }));
+    await Album.updateMany({ _id: { $in: albumsToAdd } }, { $push: { artworks: artworkId } });
+
+    // Find albums in DB document that aren't in req.body and remove artwork from them
+    const albumsToRemove = oldArtwork.albums.filter((album => {
+      return !albums.includes(album);
+    }));
+    await Album.updateMany({ _id: { $in: albumsToRemove } }, { $pull: { artworks: artworkId } });
 
     const editedArt = await Artwork.findByIdAndUpdate(artworkId, req.body, { new : true });
+
     res.json(editedArt);
   }
+
   catch (err) {
     next(err);
   }
