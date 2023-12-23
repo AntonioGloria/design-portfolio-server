@@ -17,7 +17,7 @@ router.post("/upload", fileUploader.single("imageUrl"), async (req, res, next) =
   }
 
   catch (err) {
-    console.log(err);
+    next(err);
   }
 });
 
@@ -36,7 +36,7 @@ router.post("/upload-multi", fileUploader.array("imageUrl"), async (req, res, ne
     res.json({ fileUrls: urls });
   }
   catch (err) {
-    console.log(err);
+    next(err);
   }
 });
 
@@ -57,7 +57,7 @@ router.put("/delete-multi/", async (req, res, next) => {
   }
 
   catch (err) {
-    console.log(err);
+    next(err);
   }
 });
 
