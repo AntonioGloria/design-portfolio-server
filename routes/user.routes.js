@@ -11,34 +11,34 @@ router.get("/", async (req, res, next) => {
     res.json(allUsers);
   }
   catch (err) {
-    console.log(err);
+    next(err);
   }
 });
 
 // Get user details
 router.get("/:username", async (req, res, next) => {
+  const username = req.params;
+
+  const ownAlbumsPopulate = {
+    path: 'ownAlbums',
+    populate: { path: 'artworks' }
+  };
+
+  const favoritesPopulate = {
+    path: 'favCollections',
+    populate: { path: 'artworks' }
+  };
+
   try {
-    const username = req.params;
-    const userData = await User.findOne(username).populate("ownAlbums")
-                                                  .populate({
-                                                    path: 'ownAlbums',
-                                                    populate: {
-                                                      path: 'artworks',
-                                                      model: 'Artwork'
-                                                    }
-                                                  })
-                                                  .populate("favCollections")
-                                                  .populate({
-                                                    path: 'favCollections',
-                                                    populate: {
-                                                      path: 'artworks',
-                                                      model: 'Artwork'
-                                                    }
-                                                  })
+    const userData = await User
+      .findOne(username)
+      .populate(ownAlbumsPopulate)
+      .populate(favoritesPopulate);
+
     res.json(userData);
   }
   catch (err) {
-    console.log(err);
+    next(err);
   }
 });
 
@@ -62,7 +62,7 @@ router.get("/:username/albums/", async (req, res, next) => {
     res.json(userInfo);
   }
   catch (err) {
-    console.log(err);
+    next(err);
   }
 });
 
@@ -74,7 +74,7 @@ router.get("/:username/albums/:album", async (req, res, next) => {
     res.json(userAlbumArt);
   }
   catch (err) {
-    console.log(err);
+    next(err);
   }
 });
 
@@ -87,7 +87,7 @@ router.post("/:username/create-album", async (req, res, next) => {
     res.json(createdAlbum);
   }
   catch (err) {
-    console.log(err);
+    next(err);
   }
 });
 
