@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User.model");
 const Album = require("../models/Album.model");
+const { isAuthenticated } = require("../middleware/jwt.middleware");
 
 // Get all users
 router.get("/", async (req, res, next) => {
@@ -42,15 +43,14 @@ router.get("/:username", async (req, res, next) => {
 });
 
 // Send new information to update user info
-router.put("/:username/edit-profile", async (req, res, next) => {
+router.put("/edit-profile", isAuthenticated, async (req, res, next) => {
   try {
-    const username = req.params;
-    const newData = req.body;
-    const updatedUser = await User.findOneAndUpdate(username, newData, { new: true });
+    const { _id } = req.payload;
+    const updatedUser = await User.findByIdAndUpdate(_id, req.body, { new: true });
     res.json(updatedUser);
   }
   catch (err) {
-    console.log(err);
+    next(err);
   }
 });
 

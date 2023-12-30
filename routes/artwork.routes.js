@@ -93,4 +93,23 @@ router.delete("/:_id/delete", async (req, res, next) => {
   }
 });
 
+// Verify that authenticated user is owner of artwork
+router.get("/:artworkId/verifyOwnership", isAuthenticated, async (req, res, next) => {
+  const { artworkId } = req.params;
+  const { _id } = req.payload; // authenticated user
+
+  try {
+    const artworkData = await Artwork
+    .findById(artworkId)
+    .select({creator: 1});
+
+    const { creator } = artworkData;
+    res.json(_id === creator.toString())
+  }
+
+  catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
