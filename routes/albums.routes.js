@@ -29,8 +29,9 @@ router.get("/:albumId", async (req, res, next) => {
 
 // Create own album
 router.post("/create", async (req, res, next) => {
+  const { creator } = req.body;
+
   try {
-    const { creator } = req.body;
     const newAlbum = await Album.create(req.body);
     await User.updateOne({ _id: creator._id }, { $push : { ownAlbums: newAlbum } }, { new: true });
     res.json(newAlbum);
