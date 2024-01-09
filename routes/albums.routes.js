@@ -10,19 +10,20 @@ router.get("/", async (req, res, next) => {
     res.json(allAlbums);
   }
   catch (err) {
-    console.log(err);
+    next(err);
   }
 });
 
 // Get specific album
-router.get("/:album", async (req, res, next) => {
+router.get("/:albumId", async (req, res, next) => {
+  const { albumId } = req.params;
+
   try {
-    const { _id } = req.params;
-    const albumData = await Album.findOne(_id).populate("artworks");
+    const albumData = await Album.findOne({ _id: albumId }).populate("artworks");
     res.json(albumData);
   }
   catch (err) {
-    console.log(err);
+    next(err);
   }
 });
 
@@ -35,20 +36,35 @@ router.post("/create", async (req, res, next) => {
     res.json(newAlbum);
   }
   catch (err) {
-    console.log(err);
+    next(err);
+  }
+});
+
+// Rename album
+router.patch("/:albumId/rename", async (req, res, next) => {
+  const { albumId } = req.params;
+  const { title } = req.body;
+
+  try {
+    const updatedAlbum = await Album.findByIdAndUpdate(albumId, { title }, { new: true });
+    res.json(updatedAlbum);
+  }
+  catch (err) {
+    next(err);
   }
 });
 
 // Delete album
-router.delete("/:_id/delete", async (req, res, next) => {
+router.delete("/:albumId/delete", async (req, res, next) => {
+  const { albumId } = req.params;
+
   try {
-    const { _id } = req.params;
-    const deletedAlbum = await Album.findByIdAndDelete({ _id });
-    await User.findByIdAndUpdate({ _id: deletedAlbum.creator }, { $pull : { ownAlbums: _id } }, { new: true });
+    const deletedAlbum = await Album.findByIdAndDelete({ _id: albumId });
+    await User.findByIdAndUpdate({ _id: deletedAlbum.creator }, { $pull : { ownAlbums: albumId } }, { new: true });
     res.json(deletedAlbum);
   }
   catch (err) {
-    console.log(err);
+    next(err);
   }
 });
 
