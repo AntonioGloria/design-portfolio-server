@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User.model");
 const Album = require("../models/Album.model");
+const Artwork = require("../models/Artwork.model");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 
 // Get all users
@@ -17,24 +18,9 @@ router.get("/", async (req, res, next) => {
 
 // Get user details
 router.get("/:username", async (req, res, next) => {
-  const username = req.params;
-
-  const ownAlbumsPopulate = {
-    path: 'ownAlbums',
-    populate: { path: 'artworks' }
-  };
-
-  const favoritesPopulate = {
-    path: 'favCollections',
-    populate: { path: 'artworks' }
-  };
-
+  const { username } = req.params;
   try {
-    const userData = await User
-      .findOne(username)
-      .populate(ownAlbumsPopulate)
-      .populate(favoritesPopulate);
-
+    const userData = await User.findOne({ username }).select({ password: 0 });
     res.json(userData);
   }
   catch (err) {
@@ -54,37 +40,39 @@ router.put("/edit-profile", isAuthenticated, async (req, res, next) => {
   }
 });
 
-// Get user's albums
-router.get("/:username/albums/", async (req, res, next) => {
+// Get user's albums or favorites
+router.get("/:username/albums/:albumType/", async (req, res, next) => {
+  const { username, albumType } = req.params;
   try {
-    const { username } = req.params;
-    const userInfo = await User.find({ username }, "ownAlbums").populate("ownAlbums");
-    res.json(userInfo);
+    const userData = await User.findOne({ username }).select({ _id: 1});
+    const userAlbums = await Album.find({ creator: userData._id, albumType }).populate("artworks");
+    res.json(userAlbums);
   }
   catch (err) {
     next(err);
   }
 });
 
-// Get artworks in user's specific album
-router.get("/:username/albums/:album", async (req, res, next) => {
+// Get all artworks that belong to user
+router.get("/:username/artworks/", async (req, res, next) => {
+  const { username } = req.params;
   try {
-    const { album } = req.params;
-    const userAlbumArt = await Album.findOne({ _id: album }, "artworks").populate("artworks");
-    res.json(userAlbumArt);
+    const userData = await User.findOne({ username }).select({ _id: 1});
+    const userArtworks = await Artwork.find({ creator: userData._id });
+    res.json(userArtworks);
   }
   catch (err) {
     next(err);
   }
 });
 
-// Create album
-router.post("/:username/create-album", async (req, res, next) => {
+// TODO: Get all favorites added by user
+router.get("/:username/favorites/", async (req, res, next) => {
+  const { username } = req.params;
   try {
-    const { username } = req.params;
-    const createdAlbum = await Album.create(req.body);
-    await User.findOneAndUpdate(username, { $push:{ ownAlbums: createdAlbum } }, { new : true });
-    res.json(createdAlbum);
+    const userData = await User.findOne({ username }).select({ _id: 1});
+    const userArtworks = await Artwork.find({ creator: userData._id });
+    res.json(userArtworks);
   }
   catch (err) {
     next(err);

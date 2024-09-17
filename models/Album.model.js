@@ -15,6 +15,10 @@ const albumSchema = new Schema(
       type: String,
       default: "https://res.cloudinary.com/dwhznw5ny/image/upload/v1702842616/design-portfolio/ui-defaults/defaultAlbum_zxv3sr.png"
     },
+    albumType: {
+      type: String,
+      enum: ["albums", "favorites"]
+    },
     artworks: [{type: Schema.Types.ObjectId, ref: 'Artwork'}],
   },
   {

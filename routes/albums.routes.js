@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const { isAuthenticated } = require("../middleware/jwt.middleware");
 const User = require("../models/User.model");
 const Album = require("../models/Album.model");
+const Artwork = require("../models/Artwork.model");
 
 // Get all albums
 router.get("/", async (req, res, next) => {
@@ -28,12 +30,11 @@ router.get("/:albumId", async (req, res, next) => {
 });
 
 // Create own album
-router.post("/create", async (req, res, next) => {
-  const { creator } = req.body;
+router.post("/create", isAuthenticated, async (req, res, next) => {
+  const { _id } = req.payload;
 
   try {
-    const newAlbum = await Album.create(req.body);
-    await User.updateOne({ _id: creator._id }, { $push : { ownAlbums: newAlbum } }, { new: true });
+    const newAlbum = await Album.create({ creator: _id, ...req.body });
     res.json(newAlbum);
   }
   catch (err) {
@@ -58,10 +59,14 @@ router.patch("/:albumId/rename", async (req, res, next) => {
 // Delete album
 router.delete("/:albumId/delete", async (req, res, next) => {
   const { albumId } = req.params;
-
   try {
+    await Artwork.updateMany(
+      { albums: albumId },
+      { $pull: { albums: albumId } },
+      { new: true }
+    );
+
     const deletedAlbum = await Album.findByIdAndDelete({ _id: albumId });
-    await User.findByIdAndUpdate({ _id: deletedAlbum.creator }, { $pull : { ownAlbums: albumId } }, { new: true });
     res.json(deletedAlbum);
   }
   catch (err) {
