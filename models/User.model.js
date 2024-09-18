@@ -32,7 +32,6 @@ const userSchema = new Schema(
     bio: {
       type: String
     },
-    // favArtworks: [{type: Schema.Types.ObjectId, ref: 'Artwork'}],
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`
