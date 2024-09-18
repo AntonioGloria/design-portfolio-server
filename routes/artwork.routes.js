@@ -126,24 +126,80 @@ router.patch("/:artworkId/addToFavs", isAuthenticated, async (req, res, next) =>
 
     res.json(artworkPlusFav);
   }
+
   catch (err) {
     next(err);
   }
 });
 
-// Add user to artworks' likes list
+// Remove user from artworks' likes list
 router.patch("/:artworkId/removeFromFavs", isAuthenticated, async (req, res, next) => {
   const { artworkId } = req.params;
   const { _id } = req.payload; // authenticated user
 
   try {
-    const artworkPlusFav = await Artwork.findByIdAndUpdate(
+    const artworkMinusFav = await Artwork.findByIdAndUpdate(
       artworkId,
       { $pull: { likes: _id } },
       { new: true }
     ).populate("creator").populate("assets");
 
-    res.json(artworkPlusFav);
+    // Also remove artworks from other favs albums
+    await Album.updateMany(
+      { creator: _id, albumType: "favorites" },
+      { $pull: { artworks: artworkId } },
+      { new: true }
+    )
+
+    albumsMinusFav = await Album.find({ creator: _id, albumType: "favorites" });
+    res.json({ artworkMinusFav, albumsMinusFav });
+  }
+
+  catch (err) {
+    next(err);
+  }
+});
+
+// Add artwork to user's favorite album
+router.patch("/:artworkId/addToFavAlbum/:albumId", isAuthenticated, async (req, res, next) => {
+  const { artworkId, albumId } = req.params;
+  const { _id } = req.payload; // authenticated user
+
+  try {
+    await Album.findByIdAndUpdate(
+      albumId,
+      { $addToSet: { artworks: artworkId } },
+      { new: true }
+    );
+
+    const userFavs = await Album.find(
+      { creator: _id, albumType: "favorites" }
+    ).populate("artworks");
+
+    res.json(userFavs);
+  }
+  catch (err) {
+    next(err);
+  }
+});
+
+// Remove artwork from user's favorite album
+router.patch("/:artworkId/removeFromFavAlbum/:albumId", isAuthenticated, async (req, res, next) => {
+  const { artworkId, albumId } = req.params;
+  const { _id } = req.payload; // authenticated user
+
+  try {
+    await Album.findByIdAndUpdate(
+      albumId,
+      { $pull: { artworks: artworkId } },
+      { new: true }
+    );
+
+    const userFavs = await Album.find(
+      { creator: _id, albumType: "favorites" }
+    ).populate("artworks");
+
+    res.json(userFavs);
   }
   catch (err) {
     next(err);
