@@ -112,4 +112,42 @@ router.get("/:artworkId/verifyOwnership", isAuthenticated, async (req, res, next
   }
 });
 
+// Add user to artworks' likes list
+router.patch("/:artworkId/addToFavs", isAuthenticated, async (req, res, next) => {
+  const { artworkId } = req.params;
+  const { _id } = req.payload; // authenticated user
+
+  try {
+    const artworkPlusFav = await Artwork.findByIdAndUpdate(
+      artworkId,
+      { $addToSet: { likes: _id } },
+      { new: true }
+    ).populate("creator").populate("assets");
+
+    res.json(artworkPlusFav);
+  }
+  catch (err) {
+    next(err);
+  }
+});
+
+// Add user to artworks' likes list
+router.patch("/:artworkId/removeFromFavs", isAuthenticated, async (req, res, next) => {
+  const { artworkId } = req.params;
+  const { _id } = req.payload; // authenticated user
+
+  try {
+    const artworkPlusFav = await Artwork.findByIdAndUpdate(
+      artworkId,
+      { $pull: { likes: _id } },
+      { new: true }
+    ).populate("creator").populate("assets");
+
+    res.json(artworkPlusFav);
+  }
+  catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

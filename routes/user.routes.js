@@ -66,13 +66,13 @@ router.get("/:username/artworks/", async (req, res, next) => {
   }
 });
 
-// TODO: Get all favorites added by user
+// Get all favorites added by user
 router.get("/:username/favorites/", async (req, res, next) => {
   const { username } = req.params;
   try {
     const userData = await User.findOne({ username }).select({ _id: 1});
-    const userArtworks = await Artwork.find({ creator: userData._id });
-    res.json(userArtworks);
+    const userFavorites = await Artwork.find({ likes: userData._id });
+    res.json(userFavorites);
   }
   catch (err) {
     next(err);
