@@ -11,7 +11,7 @@ router.get("/", async (req, res, next) => {
     const artData = await Artwork.find({
       ...(category && {category: category}),
       ...(medium && {medium: medium})
-    });
+    }).sort({ createdAt: -1 });
     res.json(artData);
   }
   catch (err) {

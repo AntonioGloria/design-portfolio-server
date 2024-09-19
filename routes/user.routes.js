@@ -45,7 +45,9 @@ router.get("/:username/albums/:albumType/", async (req, res, next) => {
   const { username, albumType } = req.params;
   try {
     const userData = await User.findOne({ username }).select({ _id: 1});
-    const userAlbums = await Album.find({ creator: userData._id, albumType }).populate("artworks");
+    const userAlbums = await Album.find({ creator: userData._id, albumType })
+    .populate("artworks")
+    .sort({ createdAt: -1 });
     res.json(userAlbums);
   }
   catch (err) {
@@ -58,7 +60,8 @@ router.get("/:username/artworks/", async (req, res, next) => {
   const { username } = req.params;
   try {
     const userData = await User.findOne({ username }).select({ _id: 1});
-    const userArtworks = await Artwork.find({ creator: userData._id });
+    const userArtworks = await Artwork.find({ creator: userData._id })
+    .sort({ createdAt: -1 });
     res.json(userArtworks);
   }
   catch (err) {
@@ -71,7 +74,8 @@ router.get("/:username/favorites/", async (req, res, next) => {
   const { username } = req.params;
   try {
     const userData = await User.findOne({ username }).select({ _id: 1});
-    const userFavorites = await Artwork.find({ likes: userData._id });
+    const userFavorites = await Artwork.find({ likes: userData._id })
+    .sort({ createdAt: -1 });
     res.json(userFavorites);
   }
   catch (err) {
