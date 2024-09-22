@@ -26,7 +26,8 @@ const artworkSchema = new Schema(
         "digi3DArt",
         "photoPortrait",
         "photoNature",
-        "photoMacro"
+        "photoMacro",
+        "photoLandscape"
       ]
     },
     description: {
